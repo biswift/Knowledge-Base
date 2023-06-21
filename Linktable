@@ -1,0 +1,49 @@
+Linktable:
+3 casos de uso
+ - Link de múltiplas tabelas
+ - Link de mais de um campo entre tabelas
+ - Criação de registros onde uma das tabelas não possui os dados
+ 
+=======================================================
+
+Fato x Linktable:
+Fato é uma tabela que tem uma informação independente
+Linktable é uma tabela de links de todo o dataset que contém dados de coisas que inclusive não aconteceram na tabela fato (factless)
+
+=======================================================
+
+Como montar uma Linktable:
+Carregar resident as outras tabelas todos os campos que são chave e vão se relacionar no aplicativo.
+
+=======================================================
+
+Script padrão:
+
+tLinktable:
+Load %CampoChave1    // O campo pode vir apenas como CampoChave da sua Fato
+Resident TabelaFato1;
+
+Concatenate (tLinktable)
+
+Load %CampoChave2 
+Resident TabelaDimensao1;
+
+Concatenate (tLinktable)
+
+Load %CampoChave3
+Resident TabelaDimensao2;
+
+Concatenate (tLinktable)
+
+Load Subfield(%CampoComposto1,'|',1) as %CampoChave1, 	// O campo também pode vir já pronto (já vir concatenado da sua tabela fato)
+     Subfield(%CampoComposto1,'|',2) as %CampoChave2, 	
+     Subfield(%CampoComposto1,'|',3) as %CampoChave3
+Resident TabelaFato2;
+
+Linktable:
+Load 	%CampoChave1, // campo que vai ligar na TabelaFato1
+	%CampoChave2, // campo que vai ligar na TabelaDimensao1
+	%CampoChave3, // campo que vai ligar na TabelaDimensao2
+	%CampoChave1 &|& %CampoChave2 &'|'& %CampoComposto1 as %CampoComposto1 // campo que vai ligar na TabelaFato2
+Resident tLinktable;
+Drop Table tLinktable;
